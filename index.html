@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask App</title>
+</head>
+<body>
+    <h1>Flask App</h1>
+    <form id="entryForm">
+        <input type="text" id="content" placeholder="Enter content">
+        <button type="submit">Add Entry</button>
+    </form>
+    <h2>Entries</h2>
+    <ul id="entries"></ul>
+
+    <script>
+        document.getElementById('entryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const content = document.getElementById('content').value;
+            const response = await fetch('/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ content })
+            });
+            if (response.ok) {
+                loadEntries();
+                document.getElementById('content').value = '';
+            }
+        });
+
+        async function loadEntries() {
+            const response = await fetch('/entries');
+            const entries = await response.json();
+            const entriesList = document.getElementById('entries');
+            entriesList.innerHTML = '';
+            entries.forEach(entry => {
+                const li = document.createElement('li');
+                li.textContent = entry.content;
+                entriesList.appendChild(li);
+            });
+        }
+
+        loadEntries();
+    </script>
+</body>
+</html>
